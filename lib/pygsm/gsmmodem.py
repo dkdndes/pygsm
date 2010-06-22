@@ -544,9 +544,14 @@ class GsmModem(object):
         lines = self.command('AT+CMGL=%s' % self.smshandler.CMGL_STATUS)
         lines = self._strip_ok(lines)
         messages = self.smshandler.parse_stored_messages(lines)
-        for msg in messages:
+        for index, msg in enumerate(messages,start=1):
             self.incoming_queue.append(msg)
-
+            self.delete_message(index)
+    
+    def delete_message(self, message_index):
+        self._log("Deleting message %s" % message_index)
+        self.command("AT+CMGD=%s" % message_index)
+    
     def next_message(self, ping=True, fetch=True):
         """Returns the next waiting IncomingMessage object, or None if the
            queue is empty. The optional _ping_ and _fetch_ parameters control
