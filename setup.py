@@ -36,8 +36,23 @@ os.chdir(wd)
 # stored in the git tag, and installations (whether from releases or not)
 # are tagged with a reasonably exact git version.
 #
-sys.path = ["lib"] + sys.path
-version = __import__("pygsm").get_version()
+# removing this since it requires pyserial to be installed in order to be
+# able to run python setup.py, doing it manually here instead
+# 
+#sys.path = ["lib"] + sys.path
+#version = __import__("pygsm").get_version()
+#
+# copied over from pygsm.__init__
+def get_version():
+    # if not, can we figure it out from the git tag?
+    import commands
+    try:
+        # see http://stackoverflow.com/questions/62264/#72874
+        version = commands.getoutput("git describe --tags --always")
+    except:
+        # otherwise, give up!
+        version = "unknown"
+version = get_version()
 
 class build_py (_build_py):
     def run (self):
@@ -69,6 +84,7 @@ setup(
     #                             'skeleton/project/manage.py']},
     scripts = ['pygsm_demo'],
     cmdclass={'build_py': build_py},
+    requires=["pyserial"],
     long_description = """
 PyGSM is a Free and Open Source library for interfacing with
 GSM modems and handsets to send and receive SMS messages.
