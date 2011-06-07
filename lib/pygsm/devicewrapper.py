@@ -122,6 +122,9 @@ class DeviceWrapper(object):
             # (at+cmee=1 should enable error codes)
             if buf == "ERROR":
                 raise(errors.GsmModemError)
+            
+            if buf == 'COMMAND NOT SUPPORT':
+                raise(errors.GsmError(buf))
 
     def _log(self, str_, type_="debug"):
         if hasattr(self, "logger"):
